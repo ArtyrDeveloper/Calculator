@@ -4,7 +4,8 @@ import sys
 import view_buttons
 sys.path.append('D:\\Education\\Python\\MyCalculator\\')
 from General import singleton
-from view_label import ViewLabelWritter, ViewLabelHandler
+from view_label import ViewLabelWritter
+from controller import ExpressionCreater
 
 
 class ViewWindow(Tk, singleton.Singleton):
@@ -19,7 +20,7 @@ class ViewWindow(Tk, singleton.Singleton):
             self.calculator_text.pack(anchor=CENTER)
             self.CalculatorLabel.pack(anchor=CENTER, fill=X, padx=5, pady=5)
             self.writter = ViewLabelWritter(self.calculator_text)
-            self.handler = ViewLabelHandler(self.writter)
+            self.creator = ExpressionCreater(self.writter)
 
         
         def create_buttons() -> None:
@@ -39,20 +40,17 @@ class ViewWindow(Tk, singleton.Singleton):
                         continue
 
                     if button_context == 'DEL':
-                        view_button = view_buttons.FunctionalButton(self.writter.delete_last)
+                        view_button = view_buttons.FunctionalButton(self.creator.delete_last)
                     elif  button_context == "AC":
-                        view_button = view_buttons.FunctionalButton(self.writter.clear_all)
+                        view_button = view_buttons.FunctionalButton(self.creator.clear_all)
                     elif button_context == '=':
-                        view_button = view_buttons.FunctionalButton(self.handler.solve)
+                        view_button = view_buttons.FunctionalButton(self.creator.get_answer)
                     else:
-                        view_button = view_buttons.ViewButtton(self.writter, button_context)
+                        view_button = view_buttons.ViewButtton(self.creator.add_one, button_context)
                     self.buttons.append(view_button)
 
                     button = Button(self.CalculatorButtons, text=button_context, width=8, height=3, command=view_button.onClick)
                     button.grid(row=row_number, column=column_number)
-
-
-
             self.CalculatorButtons.pack(anchor=CENTER, fill=X, padx=5, pady=5)       
 
         def set_general_settings() -> None:

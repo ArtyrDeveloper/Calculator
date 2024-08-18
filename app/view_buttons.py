@@ -8,12 +8,12 @@ class CalculatorButton(ABC):
         pass
 
 class ViewButtton(CalculatorButton):
-    def __init__(self, writter: ViewLabelWritter, text: str) -> None:
-        self.writter = writter
+    def __init__(self, function: Callable, text: str) -> None:
+        self.function = function
         self.text = text
     
     def onClick(self):
-        self.writter.write_text(self.text)
+        self.function(self.text)
 
 
 class FunctionalButton(CalculatorButton):

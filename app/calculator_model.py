@@ -42,7 +42,7 @@ class FactorialOperation(Operation):
         if len(numbers) > 1:
             raise ValueError
         
-        number = numbers[0]
+        number = int(numbers[0])
         
         if number < 0:
             raise ArithmeticError
@@ -116,6 +116,13 @@ class CtanOperation(Operation):
             raise ViewInputError
 
         return round(1 / math.tan(numbers[0]), 5)
+    
+class ModOperation(Operation):
+    def go(self, numbers: List[float | int]) -> float | int:
+        if len(numbers) > 2:
+            raise ViewInputError
+
+        return numbers[0] % numbers[1]
 
 
 class OperationIndex(enum.IntEnum):
@@ -143,7 +150,8 @@ OPERATIONS = [
     SinOperation(),
     CosOperation(),
     TanOperation(),
-    CtanOperation()
+    CtanOperation(),
+    ModOperation()
 ]
 
 
