@@ -1,0 +1,2 @@
+class ViewInputError(Exception):
+    pass
