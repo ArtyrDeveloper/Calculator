@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 from app.calculator_model import OPERATIONS, Calculator, OperationIndex
 from view_label import ViewLabelWritter
 import accessify
@@ -39,19 +39,21 @@ OPERATORS_KEYS = {
 
 
 class ExpressionContainer:
-    def __init__(self):
+    def __init__(self) -> None:
         self.components = []
     
-    def delete_last_component(self):
+
+    def delete_last_component(self) -> None:
         if len(self.components) <= 0:
             return
         del(self.components[-1])
     
 
-    def delete_all(self):
+    def delete_all(self) -> None:
         self.components = []
 
-    def add_item(self, item:str):
+
+    def add_item(self, item: str) -> None:
         if len(self.components) > 0:
             if self.components[-1][0] in DIGITALS and (item in DIGITALS or item == '.'):
                 self.components[-1] += item 
@@ -59,10 +61,10 @@ class ExpressionContainer:
         self.components.append(item.lower())  
 
 
-
 class ExpressonSolver:
-    def __init__(self):
+    def __init__(self) -> None:
         self.calculator = Calculator(OPERATIONS)
+
 
     def solve_expression(self, components: List[str]) -> float | int:
         self.calculation_history = dict()
@@ -76,12 +78,14 @@ class ExpressonSolver:
         
         return self.find_answer_in_history()
 
+
     @accessify.protected       
     def is_number(self, number: str) -> bool:
         for i in number:
             if i not in DIGITALS and i != '.':
                  return False
         return True
+
 
     @accessify.protected
     def is_valid(self, components: List[str]) -> bool:
@@ -91,6 +95,7 @@ class ExpressonSolver:
             if i == ')': closed += 1
             
         return opened == closed  
+
 
     @accessify.protected
     def calculate_operators_priority(self, components: List[str]) ->  None:
@@ -104,6 +109,7 @@ class ExpressonSolver:
                 priority_dict[i] = OPERATORS[value] + 100 * brackets_value
         
         self.priority_dictionary = priority_dict
+
 
     @accessify.protected
     def calculate_operator(self, components: List[str], location: int) -> int | float:
@@ -138,7 +144,6 @@ class ExpressonSolver:
             self.calculation_history [loc2] =  self.calculation_history [location]
 
         return self.calculation_history [location]
-    
 
 
     @accessify.protected
@@ -158,6 +163,7 @@ class ExpressonSolver:
         
         return (loc1, cache_component)
     
+
     @accessify.protected
     def handle_rigth_part(self, components: List[str], location: int) -> Tuple[int, str]:
         cache_component = ''
@@ -176,8 +182,9 @@ class ExpressonSolver:
 
         return (loc2, cache_component)
     
+    
     @accessify.protected
-    def solve_bracket_pars_from_left(self, components: List[str], location: int):
+    def solve_bracket_pars_from_left(self, components: List[str], location: int) -> int:
         i = location - 1
         bracket = 0
         prio, loc = 10000, 10000
@@ -200,8 +207,9 @@ class ExpressonSolver:
             i -= 1
         return loc
     
+    
     @accessify.protected
-    def solve_brackets_part_from_rigth(self, components: List[str], location: int):
+    def solve_brackets_part_from_rigth(self, components: List[str], location: int) -> int:
         i = location + 1
         bracket = 0
         prio, loc = 10000, -10000
@@ -222,6 +230,7 @@ class ExpressonSolver:
         
         return loc
 
+
     @accessify.protected
     def find_answer_in_history(self) -> int | float:
             min_prior, min_key = 100000, 0
@@ -236,24 +245,27 @@ class ExpressonSolver:
 
 
 class ExpressionCreater:
-    def __init__(self, view_writter: ViewLabelWritter):
+    def __init__(self, view_writter: ViewLabelWritter) -> None:
         self.view_writter = view_writter
         self.container = ExpressionContainer()
 
-    def add_one(self, item: str):
+
+    def add_one(self, item: str) -> None:
         self.container.add_item(item)                          
         self.view_writter.refresh(' '.join(self.container.components))
 
-    def clear_all(self):
+
+    def clear_all(self) -> None:
         self.container.delete_all
         self.view_writter.refresh(' '.join(self.container.components))
     
-    def delete_last(self):
+
+    def delete_last(self) -> None:
         self.container.delete_last_component()
         self.view_writter.refresh(' '.join(self.container.components))
     
+
     def get_answer(self) -> float|int:
         solver = ExpressonSolver()
         self.view_writter.refresh(str(solver.solve_expression(self.container.components)))
         self.container.delete_all()
-

@@ -30,12 +30,14 @@ class MultiplyOperation(Operation):
         
         return result
 
+
 class PowOperation(Operation):
     def go(self, numbers: List[float | int]) -> float | int:
         if len(numbers) > 2:
             raise ValueError
 
         return numbers[0] ** numbers[1]
+
 
 class FactorialOperation(Operation):
     def go(self, numbers: List[float | int]) -> float | int:      
@@ -55,6 +57,7 @@ class FactorialOperation(Operation):
             result *= i
         
         return result
+
 
 class NaturalLogarithmOperation(Operation):
     def go(self, numbers: List[float | int]) -> float | int:
@@ -117,6 +120,7 @@ class CtanOperation(Operation):
 
         return round(1 / math.tan(numbers[0]), 5)
     
+
 class ModOperation(Operation):
     def go(self, numbers: List[float | int]) -> float | int:
         if len(numbers) > 2:
@@ -139,6 +143,7 @@ class OperationIndex(enum.IntEnum):
     ctan_o = 10
     mod_o = 11
 
+
 OPERATIONS = [
     SumOperation(),
     MultiplyOperation(),
@@ -153,7 +158,6 @@ OPERATIONS = [
     CtanOperation(),
     ModOperation()
 ]
-
 
 
 class Calculator(singleton.Singleton):
