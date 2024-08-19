@@ -2,6 +2,7 @@ from typing import List, Tuple
 from app.calculator_model import OPERATIONS, Calculator, OperationIndex
 from view_label import ViewLabelWritter
 import accessify
+import errors
 
 DIGITALS = '0123456789'
 OPERATORS = {
@@ -93,8 +94,27 @@ class ExpressonSolver:
         for i in components:
             if i == '(': opened += 1
             if i == ')': closed += 1
-            
-        return opened == closed  
+        
+        if opened != closed:
+            return False
+
+        for i in range(0, len(components)):
+            if components[i] in OPERATORS.keys():
+                if components[i] in ['sin', 'cos', 'tg', 'ctg', 'log', 'ln', 'neg']:
+                    if self.is_number(components[i + 1]) == False and components[i + 1] != '(':
+                        return False
+                if components[i] in ['+', '-', '*', '/', 'mod', '^']:
+                    if self.is_number(components[i - 1]) == False and components[i - 1] != ')':
+                        return False
+                    if self.is_number(components[i + 1]) == False and components[i + 1]!= '(':
+                        return False
+                if components[i] == '!':
+                    if self.is_number(components[i - 1]) == False and components[i - 1] != ')':
+                        return False
+        
+        return True
+
+
 
 
     @accessify.protected
@@ -235,7 +255,6 @@ class ExpressonSolver:
     def find_answer_in_history(self) -> int | float:
             min_prior, min_key = 100000, 0
             for key, value in self.priority_dictionary.items():
-                print(key, value)
                 if min_prior != min(min_prior, value):
                     min_prior = value
                     min_key = key
@@ -252,20 +271,31 @@ class ExpressionCreater:
 
     def add_one(self, item: str) -> None:
         self.container.add_item(item)                          
-        self.view_writter.refresh(' '.join(self.container.components))
+        self.view_writter.write_text(' '.join(self.container.components))
 
 
     def clear_all(self) -> None:
-        self.container.delete_all
-        self.view_writter.refresh(' '.join(self.container.components))
-    
+        self.container.delete_all()
+        self.view_writter.write_text(' ')
+
 
     def delete_last(self) -> None:
         self.container.delete_last_component()
-        self.view_writter.refresh(' '.join(self.container.components))
+        self.view_writter.write_text(' '.join(self.container.components))
     
 
     def get_answer(self) -> float|int:
         solver = ExpressonSolver()
-        self.view_writter.refresh(str(solver.solve_expression(self.container.components)))
+        try:
+            answer = str(solver.solve_expression(self.container.components))
+        except ValueError:
+            self.view_writter.write_text("Syntax ERROR")
+        except errors.ViewInputError:
+            self.view_writter.write_text("Syntax ERROR")
+        except KeyError:
+            self.view_writter.write_text("Syntax ERROR")
+        except ArithmeticError:
+            self.view_writter.write_text("Math ERROR")
+        else:
+            self.view_writter.write_text(answer)
         self.container.delete_all()
